@@ -214,9 +214,9 @@ h1 em { color: var(--color-botanical); }
 .wheel-stop { --radius: calc(var(--wheel-size) * .41); position: absolute; left: 50%; top: 50%; width: 142px; min-height: 55px; padding: 8px; transform: translate(-50%, -50%) rotate(calc(var(--angle) * -1)) translateY(calc(var(--radius) * -1)); transform-origin: center calc(50% + var(--radius)); border: 0; background: transparent; color: var(--color-ink-soft); cursor: pointer; text-align: center; transition: color 300ms ease, opacity 300ms ease; }
 .wheel-stop:not(.is-active) { opacity: .72; }
 .wheel-stop:hover, .wheel-stop.is-active { color: var(--color-ink-deep); opacity: 1; }
-.wheel-stop__number { display: block; margin-bottom: 4px; font-size: 10px; letter-spacing: .12em; color: var(--color-sunlit); }
-.wheel-stop__label { display: block; font-family: var(--font-display); font-size: 17px; line-height: 1.05; }
-.wheel-stop__dot { position: absolute; top: 50%; right: -3px; display: grid; place-items: center; width: 22px; height: 22px; transform: translateY(-50%); border: 1px solid var(--color-border); border-radius: 50%; background: var(--color-paper); color: var(--color-sunlit); }
+.wheel-stop__number { display: block; margin-bottom: 4px; transform: rotate(calc(var(--angle) - var(--wheel-rotation))); font-size: 10px; letter-spacing: .12em; color: var(--color-sunlit); }
+.wheel-stop__label { display: block; transform: rotate(calc(var(--angle) - var(--wheel-rotation))); font-family: var(--font-display); font-size: 17px; line-height: 1.05; }
+.wheel-stop__dot { position: absolute; top: 50%; right: -3px; display: grid; place-items: center; width: 22px; height: 22px; transform: translateY(-50%) rotate(calc(var(--angle) - var(--wheel-rotation))); border: 1px solid var(--color-border); border-radius: 50%; background: var(--color-paper); color: var(--color-sunlit); }
 .wheel-stop.is-active .wheel-stop__dot { border-color: var(--color-sunlit); background: var(--color-sunlit); color: var(--color-paper); }
 .wheel-pointer { position: absolute; z-index: 3; top: 0; left: 50%; width: 1px; height: 55px; transform: translateX(-50%); background: var(--color-sunlit); }
 .wheel-pointer span { position: absolute; bottom: -5px; left: 50%; width: 9px; height: 9px; transform: translateX(-50%) rotate(45deg); background: var(--color-sunlit); }
