@@ -97,6 +97,8 @@ function Index() {
   const selected = concerns[active];
   const wheelRotation = -active * 45;
 
+  if (!selected) return null;
+
   const goTo = (index: number) => {
     setActive((index + concerns.length) % concerns.length);
   };
