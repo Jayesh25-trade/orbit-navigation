@@ -94,10 +94,14 @@ const concerns: Concern[] = [
 
 function Index() {
   const [active, setActive] = useState(0);
-  const selected = concerns[active];
+  const selected: Concern = concerns[active] ?? {
+    name: "Whole-person care",
+    eyebrow: "Personal wellbeing",
+    description: "Thoughtful care for the concerns that shape everyday wellbeing.",
+    image: skinCare.url,
+    imageAlt: "A calm care setting",
+  };
   const wheelRotation = -active * 45;
-
-  if (!selected) return null;
 
   const goTo = (index: number) => {
     setActive((index + concerns.length) % concerns.length);
