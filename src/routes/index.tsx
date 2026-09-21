@@ -94,10 +94,8 @@ const concerns: Concern[] = [
 
 function Index() {
   const [active, setActive] = useState(0);
-  const selected = concerns[active];
+  const selected = concerns[active] ?? concerns[0];
   const wheelRotation = -active * 45;
-
-  if (!selected) return null;
 
   const goTo = (index: number) => {
     setActive((index + concerns.length) % concerns.length);
