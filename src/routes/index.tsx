@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Leaf, MoveUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, Leaf, MoveUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import skinCare from "@/assets/skin-care.jpg.asset.json";
 import allergyCare from "@/assets/allergy-care.jpg.asset.json";
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/")({
 
 type Concern = {
   name: string;
+  short: string;
   eyebrow: string;
   description: string;
   image: string;
@@ -36,6 +37,7 @@ type Concern = {
 const concerns: Concern[] = [
   {
     name: "Skin & Vitiligo",
+    short: "Skin",
     eyebrow: "Skin health",
     description: "Specialised care for vitiligo, psoriasis, eczema, acne, fungal infections and recurring skin concerns.",
     image: skinCare.url,
@@ -43,6 +45,7 @@ const concerns: Concern[] = [
   },
   {
     name: "Respiratory & Allergies",
+    short: "Allergies",
     eyebrow: "Breathe easier",
     description: "Gentle, personalised support for allergies, recurring colds, sinus concerns and respiratory wellbeing.",
     image: allergyCare.url,
@@ -50,6 +53,7 @@ const concerns: Concern[] = [
   },
   {
     name: "Migraine & Headache",
+    short: "Migraine",
     eyebrow: "Quiet relief",
     description: "A considered approach to migraines, recurring headaches, tension and the patterns behind them.",
     image: migraineCare.url,
@@ -57,6 +61,7 @@ const concerns: Concern[] = [
   },
   {
     name: "PCOD & Hormonal Health",
+    short: "PCOD",
     eyebrow: "Hormonal balance",
     description: "Support for PCOD, cycle health, energy, metabolism and the whole picture of hormonal wellbeing.",
     image: pcodCare.url,
@@ -64,6 +69,7 @@ const concerns: Concern[] = [
   },
   {
     name: "Kidney Stones",
+    short: "Kidney",
     eyebrow: "Kidney care",
     description: "Personalised guidance for kidney stones, urinary health and sustainable changes that support recovery.",
     image: kidneyCare.url,
@@ -71,6 +77,7 @@ const concerns: Concern[] = [
   },
   {
     name: "Acidity & Digestion",
+    short: "Digestion",
     eyebrow: "Digestive health",
     description: "Care for acidity, reflux, bloating and digestive discomfort that helps you feel at home in your body.",
     image: digestionCare.url,
@@ -78,13 +85,15 @@ const concerns: Concern[] = [
   },
   {
     name: "Paediatric Illnesses",
+    short: "Paediatric",
     eyebrow: "Growing well",
     description: "Warm, attentive care for childhood illnesses, immunity, development and the questions parents carry.",
     image: wellbeingCare.url,
-    imageAlt: "Mother and child sharing a calm moment at home",
+    imageAlt: "Woman relaxing with tea beside a window and indoor plants",
   },
   {
     name: "Mental Health Care",
+    short: "Mental health",
     eyebrow: "Emotional wellbeing",
     description: "A safe, human space for anxiety, stress, low mood and the inner life that deserves to be heard.",
     image: mentalHealthCare.url,
@@ -92,19 +101,25 @@ const concerns: Concern[] = [
   },
 ];
 
+const N = concerns.length;
+const STEP = 360 / N;
+
 function Index() {
   const [active, setActive] = useState(0);
-  const selected: Concern = concerns[active] ?? {
-    name: "Whole-person care",
-    eyebrow: "Personal wellbeing",
-    description: "Thoughtful care for the concerns that shape everyday wellbeing.",
-    image: skinCare.url,
-    imageAlt: "A calm care setting",
-  };
-  const wheelRotation = -active * 45;
+  const [rotation, setRotation] = useState(0);
+
+  const selected: Concern = concerns[active] ?? concerns[0]!;
 
   const goTo = (index: number) => {
-    setActive((index + concerns.length) % concerns.length);
+    const idx = ((index % N) + N) % N;
+    setRotation((prev) => {
+      const target = -idx * STEP;
+      const current = ((prev % 360) + 360) % 360;
+      let delta = target - current;
+      delta = ((delta % 360) + 540) % 360 - 180;
+      return prev + delta;
+    });
+    setActive(idx);
   };
 
   useEffect(() => {
@@ -115,11 +130,6 @@ function Index() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [active]);
-
-  const wheelStops = useMemo(
-    () => concerns.map((concern, index) => ({ concern, index, angle: index * 45 })),
-    [],
-  );
 
   return (
     <main className="care-page">
@@ -137,36 +147,36 @@ function Index() {
           <p className="eyebrow"><span>01</span> Areas of care</p>
           <h1>Care centered on <em>the whole person.</em></h1>
           <p className="intro-copy">Find a path that feels personal. Choose a concern to discover how our practitioners can help you return to balance.</p>
-          <div className="intro-rule" />
           <p className="wheel-hint"><span className="wheel-hint__line" /> Turn the wheel to explore</p>
         </div>
 
         <div className="wheel-column">
-          <div className="wheel-stage" style={{ "--wheel-rotation": `${wheelRotation}deg` } as React.CSSProperties}>
-            <div className="wheel-pointer" aria-hidden="true"><span /></div>
-            <div className="wheel-orbit" aria-hidden="true" />
-            <div className="wheel" role="tablist" aria-label="Care concerns">
-              {wheelStops.map(({ concern, index, angle }) => (
-                <button
-                  key={concern.name}
-                  type="button"
-                  role="tab"
-                  aria-selected={active === index}
-                  aria-label={`Show ${concern.name}`}
-                  className={`wheel-stop ${active === index ? "is-active" : ""}`}
-                  style={{ "--angle": `${angle}deg` } as React.CSSProperties}
-                  onClick={() => goTo(index)}
-                >
-                  <span className="wheel-stop__number">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="wheel-stop__label">{concern.name}</span>
-                  <span className="wheel-stop__dot">{active === index ? <Check size={12} /> : null}</span>
-                </button>
+          <div
+            className="wheel-stage"
+            style={{ "--rot": `${rotation}deg`, "--n": N } as React.CSSProperties}
+          >
+            <div className="wheel-pointer" aria-hidden="true" />
+            <ul className="wheel" role="tablist" aria-label="Care concerns">
+              {concerns.map((concern, index) => (
+                <li key={concern.name} style={{ "--i": index } as React.CSSProperties}>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={active === index}
+                    aria-label={`Show ${concern.name}`}
+                    className={`wheel-stop ${active === index ? "is-active" : ""}`}
+                    onClick={() => goTo(index)}
+                  >
+                    <span className="wheel-stop__number">{String(index + 1).padStart(2, "0")}</span>
+                    {concern.short}
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
             <div className="wheel-center" aria-live="polite">
               <span className="wheel-center__small">Selected concern</span>
               <strong>{selected.name}</strong>
-              <span className="wheel-center__count">{String(active + 1).padStart(2, "0")} <i>/</i> 08</span>
+              <span className="wheel-center__count">{String(active + 1).padStart(2, "0")} <i>/</i> {String(N).padStart(2, "0")}</span>
             </div>
           </div>
           <div className="wheel-controls" aria-label="Wheel controls">
@@ -182,14 +192,19 @@ function Index() {
             <span className="image-tag">{selected.eyebrow}</span>
           </div>
           <div className="concern-card__body">
-            <p className="concern-index">{String(active + 1).padStart(2, "0")} / 08</p>
+            <p className="concern-index">{String(active + 1).padStart(2, "0")} / {String(N).padStart(2, "0")}</p>
             <h2>{selected.name}</h2>
             <p>{selected.description}</p>
             <Button className="consultation-button">Book consultation <MoveUpRight size={16} /></Button>
           </div>
         </article>
       </section>
-      <footer className="care-footer"><span>ANTAR WELLNESS</span><span>Care that begins with listening</span><span>Scroll to explore <ArrowRight size={14} /></span></footer>
+
+      <footer className="care-footer">
+        <span>ANTAR WELLNESS</span>
+        <span>Care that begins with listening</span>
+        <span>Scroll to explore <ArrowRight size={14} /></span>
+      </footer>
     </main>
   );
 }
