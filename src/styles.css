@@ -227,7 +227,7 @@ h1 em { color: var(--color-botanical); }
 .wheel-pointer {
   position: absolute;
   z-index: 3;
-  top: -4px;
+  top: 46px;
   left: 50%;
   width: 0;
   height: 0;
