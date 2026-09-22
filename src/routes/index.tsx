@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Leaf, MoveUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import skinCare from "@/assets/skin-care.jpg.asset.json";
@@ -106,20 +106,77 @@ const STEP = 360 / N;
 
 function Index() {
   const [active, setActive] = useState(0);
-  const [rotation, setRotation] = useState(0);
+  const rotationRef = useRef(0);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const animatingRef = useRef(false);
+  const hoveringRef = useRef(false);
+  const reducedRef = useRef(false);
 
-  const selected: Concern = concerns[active] ?? concerns[0]!;
+  const applyRotation = (value: number) => {
+    rotationRef.current = value;
+    stageRef.current?.style.setProperty("--rot", `${value}deg`);
+  };
+
+  const indexFor = (rotation: number) =>
+    ((Math.round(-rotation / STEP) % N) + N) % N;
+
+  // One rAF loop drives both the slow continuous drift and click animations.
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncReduced = () => {
+      reducedRef.current = mq.matches;
+      if (mq.matches) animatingRef.current = false;
+    };
+    syncReduced();
+    mq.addEventListener("change", syncReduced);
+
+    stageRef.current?.style.setProperty("--rot", `${rotationRef.current}deg`);
+
+    const SPEED = 360 / 84; // one full turn in roughly 84 seconds
+    let raf = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      if (!animatingRef.current && !reducedRef.current && !hoveringRef.current) {
+        applyRotation(rotationRef.current - SPEED * dt);
+        const idx = indexFor(rotationRef.current);
+        setActive((prev) => (prev === idx ? prev : idx));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      mq.removeEventListener("change", syncReduced);
+    };
+  }, []);
 
   const goTo = (index: number) => {
     const idx = ((index % N) + N) % N;
-    setRotation((prev) => {
-      const target = -idx * STEP;
-      const current = ((prev % 360) + 360) % 360;
-      let delta = target - current;
-      delta = ((delta % 360) + 540) % 360 - 180;
-      return prev + delta;
-    });
+    const from = rotationRef.current;
+    const delta = (((-idx * STEP - from) % 360) + 540) % 360 - 180;
     setActive(idx);
+    if (reducedRef.current || delta === 0) {
+      applyRotation(from + delta);
+      return;
+    }
+    const start = performance.now();
+    const duration = 900;
+    animatingRef.current = true;
+    const step = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      applyRotation(from + delta * eased);
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        animatingRef.current = false;
+      }
+    };
+    requestAnimationFrame(step);
   };
 
   useEffect(() => {
@@ -129,7 +186,10 @@ function Index() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
+
+  const selected: Concern = concerns[active] ?? concerns[0]!;
 
   return (
     <main className="care-page">
@@ -152,8 +212,11 @@ function Index() {
 
         <div className="wheel-column">
           <div
+            ref={stageRef}
             className="wheel-stage"
-            style={{ "--rot": `${rotation}deg`, "--n": N } as React.CSSProperties}
+            style={{ "--n": N } as React.CSSProperties}
+            onPointerEnter={() => { hoveringRef.current = true; }}
+            onPointerLeave={() => { hoveringRef.current = false; }}
           >
             <div className="wheel-pointer" aria-hidden="true" />
             <ul className="wheel" role="tablist" aria-label="Care concerns">
