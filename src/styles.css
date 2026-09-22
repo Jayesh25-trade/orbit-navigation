@@ -210,8 +210,8 @@ h1 em { color: var(--color-botanical); }
 /* ---------- Wheel: labels locked onto the ring with CSS trig ---------- */
 .wheel-column { min-width: 0; }
 .wheel-stage {
-  --wheel-size: min(86vw, 340px);
-  --wheel-radius: calc(var(--wheel-size) / 2);
+  --wheel-size: min(92vw, 360px);
+  --wheel-radius: calc(var(--wheel-size) / 2 - 58px);
   position: relative;
   width: var(--wheel-size);
   aspect-ratio: 1;
