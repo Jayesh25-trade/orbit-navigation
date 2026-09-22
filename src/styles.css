@@ -180,6 +180,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .care-page {
   min-height: 100vh;
+  overflow-x: clip;
   color: var(--color-ink-deep);
   background: var(--color-paper);
   background-image: radial-gradient(circle at 75% 17%, oklch(0.985 0.015 86 / 0.92), transparent 34%), linear-gradient(115deg, oklch(0.91 0.035 115 / 0.55), transparent 42%);
@@ -210,8 +211,8 @@ h1 em { color: var(--color-botanical); }
 /* ---------- Wheel: labels locked onto the ring with CSS trig ---------- */
 .wheel-column { min-width: 0; }
 .wheel-stage {
-  --wheel-size: min(86vw, 340px);
-  --wheel-radius: calc(var(--wheel-size) / 2);
+  --wheel-size: min(92vw, 360px);
+  --wheel-radius: calc(var(--wheel-size) / 2 - 58px);
   position: relative;
   width: var(--wheel-size);
   aspect-ratio: 1;
@@ -227,7 +228,7 @@ h1 em { color: var(--color-botanical); }
 .wheel-pointer {
   position: absolute;
   z-index: 3;
-  top: -4px;
+  top: 46px;
   left: 50%;
   width: 0;
   height: 0;
@@ -242,10 +243,15 @@ h1 em { color: var(--color-botanical); }
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
   rotate: var(--rot, 0deg);
   transition: rotate .7s cubic-bezier(.3, 1, .35, 1);
+}
+.wheel::before {
+  content: "";
+  position: absolute;
+  inset: 58px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
 }
 .wheel li {
   position: absolute;
