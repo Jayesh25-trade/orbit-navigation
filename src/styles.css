@@ -180,6 +180,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .care-page {
   min-height: 100vh;
+  overflow-x: clip;
   color: var(--color-ink-deep);
   background: var(--color-paper);
   background-image: radial-gradient(circle at 75% 17%, oklch(0.985 0.015 86 / 0.92), transparent 34%), linear-gradient(115deg, oklch(0.91 0.035 115 / 0.55), transparent 42%);
