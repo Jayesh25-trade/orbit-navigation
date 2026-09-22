@@ -242,10 +242,15 @@ h1 em { color: var(--color-botanical); }
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
   rotate: var(--rot, 0deg);
   transition: rotate .7s cubic-bezier(.3, 1, .35, 1);
+}
+.wheel::before {
+  content: "";
+  position: absolute;
+  inset: 58px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
 }
 .wheel li {
   position: absolute;
