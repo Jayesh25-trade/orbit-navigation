@@ -239,7 +239,8 @@ function Index() {
             <div className="wheel-center" aria-live="polite">
               <span className="wheel-center__small">Selected concern</span>
               <strong>{selected.name}</strong>
-              <span className="wheel-center__count">{String(active + 1).padStart(2, "0")} <i>/</i> {String(N).padStart(2, "0")}</span>
+              <span className="wheel-center__rule" aria-hidden="true" />
+              <span className="wheel-center__count"><b>{String(active + 1).padStart(2, "0")}</b> <i>/</i> {String(N).padStart(2, "0")}</span>
             </div>
           </div>
           <div className="wheel-controls" aria-label="Wheel controls">
