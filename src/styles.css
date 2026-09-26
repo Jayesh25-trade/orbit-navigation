@@ -280,7 +280,7 @@ h1 em { color: var(--color-botanical); }
   cursor: pointer;
   rotate: calc(var(--rot, 0deg) * -1);
   box-shadow: 0 2px 10px oklch(0.255 0.045 161 / .07);
-  transition: rotate .7s cubic-bezier(.3, 1, .35, 1), background .25s, color .25s, border-color .25s, scale .25s;
+  transition: background .25s, color .25s, border-color .25s, scale .25s;
 }
 .wheel-stop__number { color: var(--color-sunlit); font-size: 9px; letter-spacing: .1em; }
 .wheel-stop:hover { border-color: var(--color-sunlit); color: var(--color-ink-deep); }
